@@ -2,14 +2,10 @@
   "version": 2,
   "functions": {
     "api/webhooks/whatsapp/crossai.js": {
-      "runtime": "nodejs18.x",
-      "memory": 128,
-      "maxDuration": 10
+      "runtime": "nodejs18.x"
     },
     "api/webhooks/whatsapp/_health.js": {
-      "runtime": "nodejs18.x",
-      "memory": 128,
-      "maxDuration": 10
+      "runtime": "nodejs18.x"
     }
   },
   "routes": [
