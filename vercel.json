@@ -1,9 +1,19 @@
 {
   "version": 2,
   "functions": {
-    "api/webhooks/whatsapp/crossai.js": { "runtime": "nodejs18.x", "memory": 128, "maxDuration": 10 }
+    "api/webhooks/whatsapp/crossai.js": {
+      "runtime": "nodejs18.x",
+      "memory": 128,
+      "maxDuration": 10
+    },
+    "api/webhooks/whatsapp/_health.js": {
+      "runtime": "nodejs18.x",
+      "memory": 128,
+      "maxDuration": 10
+    }
   },
   "routes": [
-    { "src": "^/api/webhooks/whatsapp/crossai$", "dest": "/api/webhooks/whatsapp/crossai.js" }
+    { "src": "^/api/webhooks/whatsapp/crossai$", "dest": "/api/webhooks/whatsapp/crossai.js" },
+    { "src": "^/api/webhooks/whatsapp/_health$", "dest": "/api/webhooks/whatsapp/_health.js" }
   ]
 }
