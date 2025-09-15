@@ -1,12 +1,13 @@
 {
-    "private":  true,
-    "engines":  {
-                    "node":  "\u003e=18.0.0"
-                },
-    "name":  "webhook-crossai",
-    "version":  "1.0.0",
-    "scripts":  {
-                    "deploy":  "vercel --prod",
-                    "dev":  "vercel dev"
-                }
+  "private": true,
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "name": "webhook-crossai",
+  "version": "1.0.0",
+  "scripts": {
+    "deploy": "vercel --prod",
+    "dev": "vercel dev"
+  },
+  "dependencies": {}
 }
