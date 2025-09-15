@@ -206,9 +206,9 @@ chmod +x scripts/curl-examples.sh
 - **Message Processing**: ~45ms average
 - **HMAC Validation**: ~30ms average
 
-### 🌍 **Nigeria-First Optimization**
-- **Vercel Regions**: `fra1` (Frankfurt), `iad1` (Virginia)
-- **Memory Allocation**: 128MB (optimal for webhook processing)
+### 🌍 **Hobby Plan Compatible**
+- **Vercel Regions**: Default region (Hobby plan compatible)
+- **Memory Allocation**: Default Vercel allocation
 - **Cold Start**: < 500ms typical
 - **Concurrent Handling**: Auto-scaling via Vercel
 
