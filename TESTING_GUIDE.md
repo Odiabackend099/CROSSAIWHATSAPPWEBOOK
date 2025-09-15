@@ -74,6 +74,10 @@ npm run dev
 curl -s http://localhost:3000/ | jq .
 # Expected: {"ok": true, "ts": "2025-09-15T..."}
 
+# Test new health check endpoint
+curl -s http://localhost:3000/api/webhooks/whatsapp/_health | jq .
+# Expected: {"ok": true, "at": "2025-09-15T..."}
+
 # Performance test (5 iterations)
 for i in {1..5}; do
   time curl -s http://localhost:3000/ > /dev/null

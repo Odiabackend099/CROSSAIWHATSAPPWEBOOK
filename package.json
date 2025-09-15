@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "vercel dev"
+    "dev": "vercel dev",
+    "test:health": "powershell -ExecutionPolicy Bypass -File scripts/test-health.ps1",
+    "test:webhook": "powershell -ExecutionPolicy Bypass -File scripts/test-webhook.ps1"
   },
   "engines": {
     "node": ">=18"

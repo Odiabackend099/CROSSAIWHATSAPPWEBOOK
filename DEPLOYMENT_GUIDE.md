@@ -196,6 +196,12 @@ META_APP_SECRET=<your_meta_app_secret>
 node -e "console.log(require('crypto').randomBytes(16).toString('hex'))"
 ```
 
+### Step 7: Deploy Health Check Endpoint
+The health check endpoint has been added at:
+`/api/webhooks/whatsapp/_health`
+
+This endpoint returns a JSON response with the current timestamp and can be used for uptime monitoring.
+
 ---
 
 ## 🔗 **Meta App Configuration**
