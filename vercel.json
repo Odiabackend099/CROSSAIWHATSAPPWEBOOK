@@ -2,7 +2,7 @@
   "version": 2,
   "functions": {
     "api/webhooks/whatsapp/crossai.js": {
-      "runtime": "nodejs20.x"
+      "runtime": "@vercel/node@20.14.0"
     }
   }
 }
