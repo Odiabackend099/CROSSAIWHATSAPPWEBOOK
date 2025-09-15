@@ -1,13 +1,9 @@
 {
+    "version":  2,
     "functions":  {
                       "api/webhooks/whatsapp/crossai.js":  {
                                                                "maxDuration":  10,
                                                                "runtime":  "nodejs18.x"
                                                            }
-                  },
-    "version":  2,
-    "regions":  [
-                    "sin1",
-                    "fra1"
-                ]
+                  }
 }
