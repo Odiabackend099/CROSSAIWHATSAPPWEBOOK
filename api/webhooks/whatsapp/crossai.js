@@ -21,7 +21,7 @@ function isValidHmac(raw, secret, headerSig) {
 
 module.exports = async (req, res) => {
   try {
-    const VERIFY_TOKEN = process.env.VERIFY_TOKEN || "";
+    const VERIFY_TOKEN = process.env.WEBHOOK_VERIFY_TOKEN || process.env.VERIFY_TOKEN || "";
     const APP_SECRET   = process.env.META_APP_SECRET || "";
 
     // GET: webhook verification
