@@ -4,6 +4,9 @@
   "type": "module",
   "description": "Production-ready WhatsApp Cloud API webhook (Vercel serverless + Express dev server)",
   "main": "dev-server.js",
+  "engines": {
+    "node": ">=20.x"
+  },
   "scripts": {
     "dev": "node dev-server.js",
     "start": "node dev-server.js",
