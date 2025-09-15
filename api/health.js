@@ -6,7 +6,6 @@ module.exports = (req, res) => {
     status: "healthy",
     timestamp,
     region,
-    service: "WhatsApp Webhook",
-    version: "1.0.0"
+    service: "WhatsApp Webhook"
   });
 };

@@ -1,17 +1,12 @@
 {
-  "name": "crossai-whatsapp-webhook",
-  "version": "1.0.0",
-  "private": true,
-  "scripts": {
-    "dev": "vercel dev",
-    "build": "echo 'No build step required'",
-    "start": "vercel dev",
-    "test:health": "powershell -ExecutionPolicy Bypass -File scripts/test-health.ps1",
-    "test:webhook": "powershell -ExecutionPolicy Bypass -File scripts/test-webhook.ps1"
-  },
-  "engines": {
-    "node": ">=18.0.0"
-  },
-  "dependencies": {},
-  "devDependencies": {}
+    "private":  true,
+    "engines":  {
+                    "node":  "\u003e=18.0.0"
+                },
+    "name":  "crossai-whatsapp-webhook",
+    "version":  "1.0.0",
+    "scripts":  {
+                    "dev":  "vercel dev",
+                    "build":  "echo \u0027No build required\u0027"
+                }
 }

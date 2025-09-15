@@ -1,7 +1,7 @@
 node_modules/
-.vercel
+npm-debug.log*
 .env
 .env.local
-npm-debug.log*
+.vercel
 logs/
 *.log
