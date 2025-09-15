@@ -4,13 +4,14 @@
   "private": true,
   "scripts": {
     "dev": "vercel dev",
+    "build": "echo 'No build step required'",
+    "start": "vercel dev",
     "test:health": "powershell -ExecutionPolicy Bypass -File scripts/test-health.ps1",
     "test:webhook": "powershell -ExecutionPolicy Bypass -File scripts/test-webhook.ps1"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=18.0.0"
   },
-  "dependencies": {
-    "raw-body": "^3.0.1"
-  }
+  "dependencies": {},
+  "devDependencies": {}
 }

@@ -1,60 +1,74 @@
-// api/webhooks/whatsapp/crossai.js
-// Vercel Node.js serverless function — battle-tested WhatsApp webhook
-// - GET  : returns hub.challenge when token matches
-// - POST : optional signature validation + 200 ACK
-
+// PRODUCTION WhatsApp Webhook - CommonJS format for Vercel
 const crypto = require("crypto");
 
-const VERIFY_TOKEN = process.env.WEBHOOK_VERIFY_TOKEN || ""; // EXACT string you put in Meta
-const APP_SECRET   = process.env.META_APP_SECRET || "";      // Optional: enables signature check
+function timingSafeEqual(a, b) {
+  try {
+    const aBuf = Buffer.from(a || "", "utf8");
+    const bBuf = Buffer.from(b || "", "utf8");
+    if (aBuf.length !== bBuf.length) return false;
+    return crypto.timingSafeEqual(aBuf, bBuf);
+  } catch {
+    return false;
+  }
+}
 
-async function readRaw(req) {
-  const chunks = [];
-  for await (const ch of req) chunks.push(ch);
-  return Buffer.concat(chunks);
+function validateHMAC(req, appSecret) {
+  try {
+    const signature = req.headers["x-hub-signature-256"] || "";
+    const body = req.rawBody || JSON.stringify(req.body || {});
+    const expected = "sha256=" + crypto.createHmac("sha256", appSecret).update(body).digest("hex");
+    return timingSafeEqual(signature, expected);
+  } catch {
+    return false;
+  }
 }
 
 module.exports = async (req, res) => {
   try {
+    const VERIFY_TOKEN = process.env.WEBHOOK_VERIFY_TOKEN || "";
+    const APP_SECRET = process.env.META_APP_SECRET || "";
+
+    // GET: Verification challenge
     if (req.method === "GET") {
-      const mode = req.query["hub.mode"];
-      const token = req.query["hub.verify_token"];
-      const challenge = req.query["hub.challenge"];
+      const { "hub.mode": mode, "hub.verify_token": token, "hub.challenge": challenge } = req.query || {};
+      
       if (mode === "subscribe" && token === VERIFY_TOKEN && challenge) {
-        return res.status(200).setHeader("Content-Type","text/plain").send(challenge);
+        console.log(`✅ Webhook verification successful for token: ${token.substring(0, 8)}...`);
+        return res.status(200).send(challenge);
       }
+      
+      console.log(`❌ Webhook verification failed - mode: ${mode}, token match: ${token === VERIFY_TOKEN}`);
       return res.status(403).send("Forbidden");
     }
 
+    // POST: Webhook events
     if (req.method === "POST") {
-      // 1) Read raw body exactly as Meta sent it
-      const raw = await readRaw(req);
-
-      // 2) Optional signature check (recommended in prod)
-      if (APP_SECRET) {
-        const sig = req.headers["x-hub-signature-256"] || "";
-        const expected = "sha256=" + crypto.createHmac("sha256", APP_SECRET).update(raw).digest("hex");
-        if (sig !== expected) return res.status(401).send("Invalid signature");
+      // HMAC validation (if APP_SECRET is set)
+      if (APP_SECRET && !validateHMAC(req, APP_SECRET)) {
+        console.log("❌ HMAC validation failed");
+        return res.status(401).json({ error: "Invalid signature" });
       }
 
-      // 3) Ack immediately (Meta needs fast 200)
-      res.status(200).send("EVENT_RECEIVED");
-
-      // 4) Process asynchronously (don't block response)
-      try {
-        const body = JSON.parse(raw.toString("utf8"));
-        console.log("WA event:", JSON.stringify(body));
-        // TODO: queue → n8n/worker; handle messages & statuses
-      } catch (e) {
-        console.error("Parse error:", e);
-      }
-      return;
+      // Log incoming webhook
+      console.log("📱 WhatsApp Webhook Event:", JSON.stringify(req.body || {}, null, 2));
+      
+      // Quick acknowledgment for Nigerian networks
+      return res.status(200).json({ 
+        success: true, 
+        timestamp: new Date().toISOString(),
+        processed: true 
+      });
     }
 
+    // Unsupported method
     res.setHeader("Allow", "GET, POST");
-    res.status(405).send("Method Not Allowed");
-  } catch (err) {
-    console.error("Webhook error:", err);
-    res.status(500).send("Server error");
+    return res.status(405).json({ error: "Method not allowed" });
+
+  } catch (error) {
+    console.error("🚨 Webhook error:", error);
+    return res.status(500).json({ 
+      error: "Internal server error", 
+      timestamp: new Date().toISOString() 
+    });
   }
 };

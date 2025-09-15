@@ -1,2 +1,12 @@
-module.exports = (req, res) =>
-  res.status(200).json({ ok: true, ts: new Date().toISOString() });
+module.exports = (req, res) => {
+  const timestamp = new Date().toISOString();
+  const region = process.env.VERCEL_REGION || "unknown";
+  
+  res.status(200).json({
+    status: "healthy",
+    timestamp,
+    region,
+    service: "WhatsApp Webhook",
+    version: "1.0.0"
+  });
+};
