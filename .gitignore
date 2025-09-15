@@ -1,15 +1,7 @@
-# Dependencies
 node_modules/
-npm-debug.log*
-
-# Environment
+.vercel
 .env
 .env.local
-
-# Vercel
-.vercel
-
-# Logs
+npm-debug.log*
 logs/
 *.log
-.vercel

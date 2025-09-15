@@ -1,13 +1,9 @@
 {
-  "private": true,
-  "engines": {
-    "node": ">=18.0.0"
-  },
-  "name": "webhook-crossai",
+  "name": "crossai-whatsapp-webhook",
   "version": "1.0.0",
+  "private": true,
   "scripts": {
-    "deploy": "vercel --prod",
     "dev": "vercel dev"
   },
-  "dependencies": {}
+  "engines": { "node": ">=18" }
 }

@@ -1,49 +1,61 @@
-// CommonJS Vercel Node Function  supports GET verify + optional POST HMAC check
+// CommonJS Vercel Node Function: GET verify + POST (optional HMAC)
 const crypto = require("crypto");
 
 function timingSafeEq(a, b) {
-  const aBuf = Buffer.from(a || "", "utf8");
-  const bBuf = Buffer.from(b || "", "utf8");
-  if (aBuf.length !== bBuf.length) return false;
-  return crypto.timingSafeEqual(aBuf, bBuf);
+  const ab = Buffer.from(String(a), "utf8");
+  const bb = Buffer.from(String(b), "utf8");
+  if (ab.length !== bb.length) return false;
+  return crypto.timingSafeEqual(ab, bb);
 }
 
-function validHmac(req, secret) {
-  try {
-    const sig = req.headers["x-hub-signature-256"] || "";
-    const expected = "sha256=" + crypto.createHmac("sha256", secret).update(req.rawBody || JSON.stringify(req.body || {})).digest("hex");
-    return timingSafeEq(sig, expected);
-  } catch {
-    return false;
-  }
+function getRawBody(req) {
+  return new Promise((resolve, reject) => {
+    let data = "";
+    req.on("data", (chunk) => (data += chunk));
+    req.on("end", () => resolve(data));
+    req.on("error", reject);
+  });
 }
 
 module.exports = async (req, res) => {
   try {
     const VERIFY_TOKEN = process.env.VERIFY_TOKEN || "";
-    const APP_SECRET   = process.env.META_APP_SECRET || "";
+    const APP_SECRET = process.env.META_APP_SECRET || ""; // optional
 
-    // Verification handshake
+    // 1) Meta webhook verification (GET)
     if (req.method === "GET") {
       const q = req.query || {};
-      if (q["hub.mode"] === "subscribe" && q["hub.verify_token"] === VERIFY_TOKEN && q["hub.challenge"]) {
-        return res.status(200).send(q["hub.challenge"]);
+      const mode = q["hub.mode"];
+      const token = q["hub.verify_token"];
+      const challenge = q["hub.challenge"];
+      if (mode === "subscribe" && token === VERIFY_TOKEN && challenge) {
+        return res.status(200).send(challenge);
       }
       return res.status(403).send("Forbidden");
     }
 
-    // Webhook events
+    // 2) Webhook events (POST)
     if (req.method === "POST") {
-      if (APP_SECRET && !validHmac(req, APP_SECRET)) {
-        // If you haven't set APP_SECRET yet, this check is skipped.
-        return res.status(401).json({ ok: false, error: "invalid_signature" });
+      const raw = await getRawBody(req);
+      const sig = req.headers["x-hub-signature-256"] || "";
+
+      if (APP_SECRET) {
+        const expected =
+          "sha256=" + crypto.createHmac("sha256", APP_SECRET).update(raw).digest("hex");
+        if (!timingSafeEq(expected, sig)) {
+          return res.status(401).json({ ok: false, error: "invalid_signature" });
+        }
       }
-      console.log("Incoming WhatsApp event:", JSON.stringify(req.body || {}, null, 2));
+
+      let body = {};
+      try { body = raw ? JSON.parse(raw) : (req.body || {}); } catch {}
+
+      console.log("WABA event:", JSON.stringify(body, null, 2));
       return res.status(200).json({ ok: true });
     }
 
     res.setHeader("Allow", "GET, POST");
-    return res.status(405).send("Method Not Allowed");
+    return res.status(405).end("Method Not Allowed");
   } catch (err) {
     console.error("Webhook handler error:", err);
     return res.status(500).send("Internal Server Error");
